@@ -2,10 +2,22 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONTAINER="${IRIS_CONTAINER:-iris-anvil-iris}"
+BASE_URL="${IRIS_ANVIL_URL:-http://127.0.0.1:52773}"
+
 for _ in $(seq 1 60); do
   if docker exec "$CONTAINER" iris qlist >/dev/null 2>&1; then break; fi
   sleep 1
 done
+
 docker exec -i "$CONTAINER" iris session IRIS < "$ROOT/scripts/bootstrap_iris.scr"
-curl -fsS http://127.0.0.1:52773/anvil/api/overview >/dev/null
-echo "IRIS Anvil bootstrap complete: http://127.0.0.1:52773/anvil/index.html"
+
+for _ in $(seq 1 60); do
+  if curl -fsS "$BASE_URL/anvil/api/overview" >/dev/null 2>&1; then
+    echo "IRIS Anvil bootstrap complete: $BASE_URL/anvil/index.html"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "IRIS Anvil web application did not become ready" >&2
+exit 1
