@@ -1,5 +1,6 @@
 zn "USER"
 do $SYSTEM.OBJ.Load("/opt/irisanvil/src/Anvil/REST.cls","ck")
+do $SYSTEM.OBJ.Load("/opt/irisanvil/src/Anvil/Public.cls","ck")
 zn "%SYS"
 set sc=##class(Security.Services).Get("%Service_WebGateway",.svc)
 set svc("AutheEnabled")=96
