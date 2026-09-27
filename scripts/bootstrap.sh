@@ -5,7 +5,8 @@ CONTAINER="${IRIS_CONTAINER:-iris-anvil-iris}"
 BASE_URL="${IRIS_ANVIL_URL:-http://127.0.0.1:52773}"
 
 for _ in $(seq 1 60); do
-  if docker exec "$CONTAINER" iris qlist >/dev/null 2>&1; then break; fi
+  code=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL/csp/sys/UtilHome.csp" 2>/dev/null || true)
+  if [ "$code" != "" ] && [ "$code" != "000" ]; then break; fi
   sleep 1
 done
 
